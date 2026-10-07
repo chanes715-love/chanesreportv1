@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>表單回條提醒系統</title>
+    
+    <!-- 【新增】隱藏 Tailwind CDN 警告的攔截器 (放在最上面優先執行) -->
+    <script>
+        const originalWarn = console.warn;
+        console.warn = function() {
+            if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('cdn.tailwindcss.com')) {
+                return; // 攔截 Tailwind 的黃色警告
+            }
+            originalWarn.apply(console, arguments);
+        };
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
     <style>
         /* 基礎樣式先載入，避免白畫面 */
+        [v-cloak] { display: none !important; }
         body { font-family: 'Klee One', cursive, sans-serif; background-color: #F7F4EA; color: #4A4A4A; margin: 0; }
         .bg-teal { background-color: #007D85; }
         .btn-primary { background-color: #007D85; color: #FFF; transition: 0.2s; }
@@ -35,7 +49,8 @@
     </style>
 </head>
 <body>
-    <div id="app" class="max-w-6xl mx-auto p-3 md:p-6" style="display: none;" :style="{ display: 'block' }">
+    <div id="app" v-cloak class="max-w-6xl mx-auto p-3 md:p-6">
+        
         <div v-if="isLoading" class="loading-overlay">
             <div>資料同步中，請稍候... 🍵</div>
         </div>
@@ -205,17 +220,7 @@
         </div>
     </div>
 
-    <!-- 【新增】隱藏 Tailwind CDN 警告的攔截器 -->
-    <script>
-        const originalWarn = console.warn;
-        console.warn = function() {
-            if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('cdn.tailwindcss.com')) {
-                return; // 攔截 Tailwind 的黃色警告
-            }
-            originalWarn.apply(console, arguments);
-        };
-    </script>
-    
+    <!-- 腳本引入 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
@@ -234,7 +239,6 @@
                     userList: [], loginForm: { name: '', pin: '' },
                     items: [], searchDept: '', 
                     
-                    // 分頁
                     currentPage: 1, itemsPerPage: 10,
                     
                     form: { id: null, deadline: '', formName: '', content: '' },
